@@ -1,0 +1,107 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Face ID - Sistema de Reconhecimento Facial</title>
+    <link rel="stylesheet" href="styles.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+</head>
+<body class="light-mode">
+    <div class="dashboard-container">
+        <!-- Sidebar -->
+        <aside class="sidebar">
+            <!-- Logo -->
+            <div class="logo">
+                <img src="images/logo/image.png" alt="Face ID Logo">
+                <h1>Face ID</h1>
+            </div>
+            
+            <!-- Navigation Menu -->
+            <nav class="menu">
+                <ul>
+                    <li class="active" data-section="dashboard">
+                        <i class="fas fa-home"></i> 
+                        <span>Dashboard</span>
+                    </li>
+                    <li data-section="register">
+                        <i class="fas fa-user-plus"></i> 
+                        <span>Cadastrar</span>
+                    </li>
+                    <li data-section="recognize">
+                        <i class="fas fa-search"></i> 
+                        <span>Reconhecer</span>
+                    </li>
+                    <li data-section="users">
+                        <i class="fas fa-users"></i> 
+                        <span>Usuários</span>
+                    </li>
+                    <li data-section="history">
+                        <i class="fas fa-history"></i> 
+                        <span>Histórico</span>
+                    </li>
+                </ul>
+            </nav>
+            
+            <!-- Theme Switcher -->
+            <div class="theme-switcher">
+                <i class="fas fa-moon"></i>
+                <span>Tema Escuro</span>
+            </div>
+        </aside>   
+        
+        <!-- Main Content Area -->
+        <main class="main-content">
+            <!-- Dashboard Section -->
+            <section id="dashboard" class="content-section active">
+                <div class="welcome-message">
+                    <h2>Bem-vindo ao Face ID</h2>
+                    <p>Sistema de reconhecimento facial inteligente com tecnologia avançada</p>
+                    <div style="margin-top: 30px;">
+                        <button onclick="showSection('register')" style="margin: 10px; padding: 15px 30px; background: #007bff; color: white; border: none; border-radius: 8px; cursor: pointer; font-size: 16px; transition: all 0.3s;">
+                            <i class="fas fa-user-plus"></i> Cadastrar Novo Usuário
+                        </button>
+                        <button onclick="showSection('recognize')" style="margin: 10px; padding: 15px 30px; background: #28a745; color: white; border: none; border-radius: 8px; cursor: pointer; font-size: 16px; transition: all 0.3s;">
+                            <i class="fas fa-search"></i> Reconhecer Rosto
+                        </button>
+                        <button onclick="showSection('users')" style="margin: 10px; padding: 15px 30px; background: #6f42c1; color: white; border: none; border-radius: 8px; cursor: pointer; font-size: 16px; transition: all 0.3s;">
+                            <i class="fas fa-users"></i> Ver Usuários
+                        </button>
+                    </div>
+                </div>
+            </section>
+            
+            <!-- Register Section -->
+            <section id="register" class="content-section">
+                <!-- Content will be dynamically loaded by JavaScript -->
+            </section>
+            
+            <!-- Recognize Section -->
+            <section id="recognize" class="content-section">
+                <!-- Content will be dynamically loaded by JavaScript -->
+            </section>
+            
+            <!-- Users Section -->
+            <section id="users" class="content-section">
+                <!-- Content will be dynamically loaded by JavaScript -->
+            </section>
+            
+            <!-- History Section -->
+            <section id="history" class="content-section">
+                <!-- Content will be dynamically loaded by JavaScript -->
+            </section>
+        </main>
+        
+        <!-- Success Toast Notification -->
+        <div id="successToast" class="success-toast">
+            <i class="fas fa-check-circle"></i>
+            <span id="successToastMsg">Operação realizada com sucesso!</span>
+        </div>
+    </div>
+
+    <!-- JavaScript Libraries -->
+    <script src="https://cdn.jsdelivr.net/npm/face-api.js@0.22.2/dist/face-api.min.js"></script>
+    <script src="scripts/database.js"></script>
+    <script src="scripts/script.js"></script>
+</body>
+</html>
