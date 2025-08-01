@@ -21,8 +21,8 @@ mongoose
   .connect(
     process.env.MONGODB_URL.replace("<db_password>", "YOUR_PASSWORD_HERE")
   )
-  .then(() => console.log("✅ Connected to MongoDB"))
-  .catch((err) => console.error("❌ MongoDB connection error:", err));
+  .then(() => console.log(" Connected to MongoDB"))
+  .catch((err) => console.error(" MongoDB connection error:", err));
 
 // Face Schema
 const FaceSchema = new mongoose.Schema({
@@ -179,5 +179,5 @@ app.get("/", (req, res) => {
 });
 
 app.listen(PORT, () => {
-  console.log(`🚀 Server running on http://localhost:${PORT}`);
+  console.log(` Server running on http://localhost:${PORT}`);
 });

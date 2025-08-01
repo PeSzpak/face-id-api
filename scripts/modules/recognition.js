@@ -4,7 +4,7 @@ export class RecognitionManager {
     this.modelsManager = modelsManager;
     this.currentStream = null;
     this.recognitionInterval = null;
-    this.similarityThreshold = 0.7; 
+    this.similarityThreshold = 0.7; // similirarity %
   }
 
   loadSection() {
