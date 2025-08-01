@@ -1,0 +1,55 @@
+/* Mobile responsive styles */
+
+@media (max-width: 480px) {
+  .sidebar {
+    width: 60px;
+  }
+
+  .sidebar .logo h1,
+  .sidebar .menu span,
+  .sidebar .theme-switcher span {
+    display: none;
+  }
+
+  .welcome-message h2 {
+    font-size: 2rem;
+  }
+
+  .dashboard-btn {
+    font-size: 14px;
+    padding: 18px 20px;
+  }
+
+  #registerName {
+    width: 200px;
+  }
+
+  .users-list-header {
+    flex-direction: column;
+    gap: 15px;
+  }
+
+  .success-toast {
+    top: 20px;
+    right: 20px;
+    padding: 15px 20px;
+    font-size: 1rem;
+  }
+
+  .recognize-container {
+    padding: 10px;
+  }
+
+  .recognize-container h2 {
+    font-size: 1.5rem;
+  }
+
+  .recognition-controls button {
+    min-width: 200px;
+    font-size: 0.9rem;
+  }
+
+  .threshold-control {
+    padding: 12px;
+  }
+}

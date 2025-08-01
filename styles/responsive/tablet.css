@@ -1,0 +1,73 @@
+/* Tablet responsive styles */
+
+@media (max-width: 768px) {
+  .sidebar {
+    width: 200px;
+  }
+
+  .welcome-message h2 {
+    font-size: 2.5rem;
+  }
+
+  .welcome-message p {
+    font-size: 1.2rem;
+    padding: 0 20px;
+  }
+
+  .dashboard-buttons {
+    grid-template-columns: 1fr;
+    gap: 20px;
+    padding: 0 20px;
+  }
+
+  .dashboard-btn {
+    padding: 20px 25px;
+    font-size: 16px;
+    min-height: 70px;
+  }
+
+  .register-container,
+  .recognize-container {
+    padding: 20px;
+  }
+
+  .register-container h2,
+  .recognize-container h2 {
+    font-size: 2rem;
+  }
+
+  #registerName {
+    width: 250px;
+  }
+
+  .users-list,
+  .history-container {
+    margin: 20px;
+    padding: 20px;
+  }
+
+  #registerVideo,
+  #recognizeVideo {
+    max-width: 400px;
+  }
+
+  .recognition-controls {
+    flex-direction: column;
+    align-items: center;
+    gap: 10px;
+  }
+
+  .recognition-controls button {
+    min-width: 250px;
+    padding: 15px 20px;
+  }
+
+  .threshold-control {
+    margin: 10px 0;
+    padding: 15px;
+  }
+
+  .video-container {
+    max-width: 95%;
+  }
+}

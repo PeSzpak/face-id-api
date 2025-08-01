@@ -1,0 +1,7 @@
+/* Light theme (default) */
+body.light-mode {
+  background: #f7f7f7;
+  color: #222;
+}
+
+/* Light theme specific styles are already the base styles */

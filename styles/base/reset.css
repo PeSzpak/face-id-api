@@ -1,0 +1,41 @@
+/* Base reset and global styles */
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
+body,
+html {
+  margin: 0;
+  padding: 0;
+  font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+  background: #f7f7f7;
+  color: #222;
+  min-height: 100vh;
+  transition: background 0.3s, color 0.3s;
+}
+
+/* Main Layout */
+.dashboard-container {
+  display: flex;
+  min-height: 100vh;
+}
+
+.main-content {
+  flex: 1;
+  background: inherit;
+  min-height: 100vh;
+  position: relative;
+}
+
+/* Content sections */
+.content-section {
+  display: none;
+  padding: 0;
+  min-height: 100vh;
+}
+
+.content-section.active {
+  display: block;
+}

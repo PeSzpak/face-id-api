@@ -1,0 +1,78 @@
+/* Welcome section styles */
+
+.welcome-message {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  min-height: 100vh;
+  text-align: center;
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  color: white;
+  position: relative;
+  overflow: hidden;
+}
+
+.welcome-message::before {
+  content: "";
+  position: absolute;
+  top: -50%;
+  left: -50%;
+  width: 200%;
+  height: 200%;
+  background: linear-gradient(
+    45deg,
+    transparent,
+    rgba(255, 255, 255, 0.1),
+    transparent
+  );
+  transform: rotate(45deg);
+  animation: shine 6s infinite;
+}
+
+.welcome-message::after {
+  content: "";
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  height: 1px;
+  background: linear-gradient(
+    90deg,
+    transparent,
+    rgba(255, 255, 255, 0.6),
+    transparent
+  );
+}
+
+.welcome-message h2 {
+  font-size: 4rem;
+  margin-bottom: 20px;
+  font-weight: 800;
+  text-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
+  position: relative;
+  z-index: 2;
+  animation: slideInDown 1s ease-out;
+}
+
+.welcome-message p {
+  font-size: 1.4rem;
+  margin-bottom: 40px;
+  opacity: 0.95;
+  position: relative;
+  z-index: 2;
+  max-width: 600px;
+  line-height: 1.6;
+  animation: slideInUp 1s ease-out 0.3s both;
+}
+
+.dashboard-buttons {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+  gap: 30px;
+  padding: 0 40px;
+  position: relative;
+  z-index: 2;
+  max-width: 1200px;
+  animation: fadeInScale 1s ease-out 0.6s both;
+}

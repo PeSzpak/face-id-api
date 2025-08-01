@@ -1,0 +1,128 @@
+/* Sidebar component styles */
+.sidebar {
+  width: 260px;
+  background: linear-gradient(180deg, #2c3e50 0%, #34495e 100%);
+  color: #fff;
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-start;
+  height: 100vh;
+  padding: 0;
+  position: relative;
+  box-shadow: 2px 0 10px rgba(0, 0, 0, 0.1);
+}
+
+/* Logo */
+.logo {
+  display: flex;
+  align-items: center;
+  padding: 30px 24px 20px 24px;
+  gap: 12px;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.logo img {
+  width: 40px;
+  height: 40px;
+  border-radius: 8px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
+}
+
+.logo h1 {
+  font-size: 1.4rem;
+  margin: 0;
+  font-weight: 700;
+  letter-spacing: 1.2px;
+  background: linear-gradient(45deg, #3498db, #2ecc71);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+/* Menu */
+.menu {
+  flex: 1;
+  padding: 20px 0;
+}
+
+.menu ul {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+
+.menu li {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 16px 24px;
+  cursor: pointer;
+  color: #bdc3c7;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  border-left: 4px solid transparent;
+  margin: 4px 0;
+  position: relative;
+  overflow: hidden;
+}
+
+.menu li::before {
+  content: "";
+  position: absolute;
+  left: 0;
+  top: 0;
+  height: 100%;
+  width: 0;
+  background: linear-gradient(90deg, #3498db, #2ecc71);
+  transition: width 0.3s ease;
+  z-index: 0;
+}
+
+.menu li.active::before,
+.menu li:hover::before {
+  width: 100%;
+}
+
+.menu li.active,
+.menu li:hover {
+  color: #fff;
+  border-left: 4px solid #3498db;
+  transform: translateX(8px);
+}
+
+.menu li i {
+  width: 20px;
+  text-align: center;
+  font-size: 1.1rem;
+  position: relative;
+  z-index: 1;
+}
+
+.menu li span {
+  font-weight: 500;
+  position: relative;
+  z-index: 1;
+}
+
+/* Theme switcher */
+.theme-switcher {
+  margin: 20px;
+  padding: 12px 16px;
+  background: rgba(52, 73, 94, 0.8);
+  border-radius: 12px;
+  color: #bdc3c7;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  font-size: 1rem;
+  transition: all 0.3s ease;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  backdrop-filter: blur(10px);
+}
+
+.theme-switcher:hover {
+  background: linear-gradient(45deg, #3498db, #2ecc71);
+  color: #fff;
+  transform: translateY(-2px);
+  box-shadow: 0 5px 15px rgba(52, 152, 219, 0.4);
+}
