@@ -13,9 +13,9 @@ export class ModelsManager {
             await faceapi.nets.faceRecognitionNet.loadFromUri('./models');
             await faceapi.nets.faceExpressionNet.loadFromUri('./models');
             this.modelsLoaded = true;
-            console.log('✅ All models loaded successfully');
+            console.log('✅ Todos os modelos carregados com sucesso');
         } catch (error) {
-            console.error('❌ Error loading models:', error);
+            console.error('❌ Erro ao carregar os models:', error);
         }
     }
 

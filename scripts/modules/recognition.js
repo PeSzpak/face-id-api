@@ -4,6 +4,7 @@ export class RecognitionManager {
         this.modelsManager = modelsManager;
         this.currentStream = null;
         this.recognitionInterval = null;
+        this.similarityThreshold = 0.7; 
     }
 
     loadSection() {
@@ -23,6 +24,20 @@ export class RecognitionManager {
                         ⏹️ Parar Reconhecimento
                     </button>
                 </div>
+                <div style="margin: 10px 0; padding: 15px; background: rgba(255,255,255,0.1); border-radius: 8px;">
+                    <label for="similarityThreshold" style="display: block; margin-bottom: 8px; font-weight: 600;">
+                        Nível de Similaridade Mínimo: <span id="thresholdValue" style="color: #3498db;">${Math.round(this.similarityThreshold * 100)}%</span>
+                    </label>
+                    <input type="range" id="similarityThreshold" min="0.3" max="0.9" step="0.05" value="${this.similarityThreshold}" 
+                           style="width: 100%; max-width: 400px;" onchange="window.recognitionManager.updateThreshold(this.value)">
+                    <div style="display: flex; justify-content: space-between; font-size: 0.8em; color: #666; margin-top: 5px;">
+                        <span>30% (Muito Permissivo)</span>
+                        <span>90% (Muito Restritivo)</span>
+                    </div>
+                    <div style="font-size: 0.9em; color: #888; margin-top: 8px; text-align: center;">
+                        ⚠️ Só mostra detecções acima do nível configurado
+                    </div>
+                </div>
                 <div id="recognizeResults"></div>
             </div>
         `;
@@ -40,6 +55,15 @@ export class RecognitionManager {
 
         startBtn.onclick = () => this.startRecognition(video, canvas, startBtn, stopBtn, resultsDiv);
         stopBtn.onclick = () => this.stopRecognition(video, canvas, startBtn, stopBtn, resultsDiv);
+    }
+
+    updateThreshold(value) {
+        this.similarityThreshold = parseFloat(value);
+        const thresholdDisplay = document.getElementById('thresholdValue');
+        if (thresholdDisplay) {
+            thresholdDisplay.textContent = `${Math.round(this.similarityThreshold * 100)}%`;
+        }
+        console.log(`🎯 Threshold atualizado para: ${this.similarityThreshold} (${Math.round(this.similarityThreshold * 100)}%)`);
     }
 
     async startRecognition(video, canvas, startBtn, stopBtn, resultsDiv) {
@@ -61,6 +85,7 @@ export class RecognitionManager {
 
             startBtn.disabled = true;
             stopBtn.disabled = false;
+            resultsDiv.innerHTML = `<p style="color: blue;">🔍 Reconhecimento iniciado (mín. ${Math.round(this.similarityThreshold * 100)}%)...</p>`;
             
         } catch (error) {
             console.error('Error starting recognition:', error);
@@ -97,43 +122,96 @@ export class RecognitionManager {
             ctx.clearRect(0, 0, canvas.width, canvas.height);
 
             if (detections.length === 0) {
-                resultsDiv.innerHTML = '<p>👤 Nenhum rosto detectado</p>';
+                resultsDiv.innerHTML = '<p style="color: #666;">👤 Nenhum rosto detectado</p>';
                 return;
             }
 
             const faceMatcher = this.modelsManager.getFaceMatcher();
             const results = detections.map(d => faceMatcher.findBestMatch(d.descriptor));
 
-            // Draw results
+            //  // only process Threshold recognition 
+            const validDetections = [];
+            const rejectedDetections = [];
+            
             results.forEach((result, i) => {
                 const box = detections[i].detection.box;
-                const drawOptions = {
-                    label: result.toString(),
-                    lineWidth: 2,
-                    boxColor: result.label !== 'unknown' ? 'green' : 'red'
-                };
+                const similarity = 1 - result.distance; // Convert distance to similarity
+                const similarityPercent = Math.round(similarity * 100);
                 
-                if (result.label !== 'unknown') {
+                console.log(`🔍 Detecção ${i}: ${result.label}, Similaridade: ${similarityPercent}%, Threshold: ${Math.round(this.similarityThreshold * 100)}%`);
+                
+                // ONLY SHOW IF PASS ON THRESHOLD
+                if (result.label !== 'unknown' && similarity >= this.similarityThreshold) {
+                    // Sucefully recognized - SHOW
+                    const drawOptions = {
+                        label: `${result.label} (${similarityPercent}%)`,
+                        lineWidth: 3,
+                        boxColor: 'green'
+                    };
+                    
+                    // draw green box
+                    const drawBox = new faceapi.draw.DrawBox(box, drawOptions);
+                    drawBox.draw(canvas);
+                    
+                    validDetections.push({
+                        type: 'success',
+                        name: result.label,
+                        similarity: similarityPercent
+                    });
+                    
+                    // Update recognition count in database
                     window.dbManager.updateRecognition(result.label).catch(console.error);
+                    
+                } else {
+                    // DON`T SHOW - but count for statistic
+                    rejectedDetections.push({
+                        label: result.label,
+                        similarity: similarityPercent,
+                        reason: result.label === 'unknown' ? 'Desconhecido' : 'Baixa similaridade'
+                    });
                 }
-
-                const drawBox = new faceapi.draw.DrawBox(box, drawOptions);
-                drawBox.draw(canvas);
             });
 
-            // Update results display
-            const recognizedNames = results
-                .filter(r => r.label !== 'unknown')
-                .map(r => r.label);
-
-            if (recognizedNames.length > 0) {
-                resultsDiv.innerHTML = `<p style="color: green;">✅ Reconhecido: ${recognizedNames.join(', ')}</p>`;
-            } else {
-                resultsDiv.innerHTML = '<p style="color: orange;">⚠️ Pessoa não reconhecida</p>';
-            }
+            //  // updated display for only validated detection
+            this.updateResultsDisplay(validDetections, rejectedDetections, resultsDiv);
 
         } catch (error) {
             console.error('Recognition error:', error);
+            resultsDiv.innerHTML = '<p style="color: red;">❌ Erro durante reconhecimento</p>';
         }
+    }
+
+    updateResultsDisplay(validDetections, rejectedDetections, resultsDiv) {
+        let html = '<div style="text-align: center; font-weight: 600;">';
+
+        if (validDetections.length > 0) {
+            //only show validated detection
+            const names = validDetections.map(r => `${r.name} (${r.similarity}%)`).join(', ');
+            html += `<p style="color: green; font-size: 1.3em; margin: 10px 0;">
+                ✅ <strong>RECONHECIDO:</strong> ${names}
+            </p>`;
+        } else {
+            // No valid recognition
+            const totalFaces = validDetections.length + rejectedDetections.length;
+            
+            if (totalFaces > 0) {
+                html += `<p style="color: orange; font-size: 1.1em; margin: 10px 0;">
+                    ⚠️ <strong>Rosto detectado mas não reconhecido</strong><br>
+                    <small>Similaridade abaixo de ${Math.round(this.similarityThreshold * 100)}%</small>
+                </p>`;
+            } else {
+                html += `<p style="color: #666; font-size: 1em; margin: 10px 0;">
+                    👤 Aguardando detecção de rosto...
+                </p>`;
+            }
+        }
+
+        //show statistic on console for debug 
+        if (rejectedDetections.length > 0) {
+            console.log(`❌ ${rejectedDetections.length} detecções rejeitadas:`, rejectedDetections);
+        }
+
+        html += '</div>';
+        resultsDiv.innerHTML = html;
     }
 }

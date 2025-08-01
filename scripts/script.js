@@ -43,6 +43,7 @@ class FaceIDApp {
         window.utils = this.utils;
         window.usersManager = this.usersManager;
         window.historyManager = this.historyManager;
+        window.recognitionManager = this.recognitionManager;
     }
 
     loadSection(sectionName) {
