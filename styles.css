@@ -548,7 +548,7 @@ body.light-mode {
   pointer-events: none;
 }
 
-/* ADD: Button container for recognition controls */
+/* Button container for recognition controls */
 .recognition-controls {
   display: flex;
   gap: 15px;
@@ -572,7 +572,7 @@ body.light-mode {
   justify-content: center;
 }
 
-/* ADD: Threshold control container */
+/* Threshold control container */
 .threshold-control {
   width: 100%;
   max-width: 500px;
@@ -837,7 +837,7 @@ body.dark-mode .recognize-container h2 {
   color: #ecf0f1;
 }
 
-/* ADD: Dark mode threshold control styles */
+/* Dark mode threshold control styles */
 body.dark-mode .threshold-control {
   background: rgba(52, 73, 94, 0.8);
   border: 1px solid rgba(255, 255, 255, 0.1);
@@ -940,68 +940,27 @@ body.dark-mode #recognizeResults {
   #recognizeVideo {
     max-width: 400px;
   }
-}
 
-@media (max-width: 480px) {
-  .sidebar {
-    width: 60px;
-  }
-
-  .sidebar .logo h1,
-  .sidebar .menu span,
-  .sidebar .theme-switcher span {
-    display: none;
-  }
-
-  .welcome-message h2 {
-    font-size: 2rem;
-  }
-
-  .dashboard-btn {
-    font-size: 14px;
-    padding: 18px 20px;
-  }
-
-  #registerName {
-    width: 200px;
-  }
-
-  .users-list-header {
+  /* Mobile recognition controls */
+  .recognition-controls {
     flex-direction: column;
-    gap: 15px;
+    align-items: center;
+    gap: 10px;
   }
 
-  .success-toast {
-    top: 20px;
-    right: 20px;
+  .recognition-controls button {
+    min-width: 250px;
     padding: 15px 20px;
-    font-size: 1rem;
   }
-}
-#registerVideo,
-#recognizeVideo {
-  max-width: 400px;
-}
 
-/* ADD: Mobile recognition controls */
-.recognition-controls {
-  flex-direction: column;
-  align-items: center;
-  gap: 10px;
-}
+  .threshold-control {
+    margin: 10px 0;
+    padding: 15px;
+  }
 
-.recognition-controls button {
-  min-width: 250px;
-  padding: 15px 20px;
-}
-
-.threshold-control {
-  margin: 10px 0;
-  padding: 15px;
-}
-
-.video-container {
-  max-width: 95%;
+  .video-container {
+    max-width: 95%;
+  }
 }
 
 @media (max-width: 480px) {
@@ -1040,7 +999,7 @@ body.dark-mode #recognizeResults {
     font-size: 1rem;
   }
 
-  /* ADD: Small mobile recognition styles */
+  /* Small mobile recognition styles */
   .recognize-container {
     padding: 10px;
   }
