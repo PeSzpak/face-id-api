@@ -1,8 +1,8 @@
 // Dashboard section management
 export class DashboardManager {
-    loadSection() {
-        const section = document.getElementById('dashboard');
-        section.innerHTML = `
+  loadSection() {
+    const section = document.getElementById("dashboard");
+    section.innerHTML = `
             <div class="welcome-message">
                 <h2>Bem-vindo ao Face ID</h2>
                 <p>Sistema de reconhecimento facial inteligente com tecnologia avançada</p>
@@ -22,5 +22,5 @@ export class DashboardManager {
                 </div>
             </div>
         `;
-    }
+  }
 }

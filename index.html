@@ -1,86 +1,78 @@
 <!DOCTYPE html>
 <html lang="pt-BR">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Face ID - Sistema de Reconhecimento Facial</title>
-    <link rel="stylesheet" href="styles.css">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
-</head>
-<body class="light-mode">
+    <link rel="stylesheet" href="styles.css" />
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css"
+    />
+  </head>
+  <body class="light-mode">
     <div class="dashboard-container">
-        <!-- Sidebar -->
-        <div class="sidebar">
-            <div class="logo">
-                <img src="images/logo/image.png" alt="Face ID Logo">
-                <h1>Face ID</h1>
-            </div>
-            
-            <nav class="menu">
-                <ul>
-                    <li data-section="dashboard" class="active">
-                        <i class="fas fa-home"></i>
-                        <span>Dashboard</span>
-                    </li>
-                    <li data-section="register">
-                        <i class="fas fa-user-plus"></i>
-                        <span>Cadastrar</span>
-                    </li>
-                    <li data-section="recognize">
-                        <i class="fas fa-search"></i>
-                        <span>Reconhecer</span>
-                    </li>
-                    <li data-section="users">
-                        <i class="fas fa-users"></i>
-                        <span>Usuários</span>
-                    </li>
-                    <li data-section="history">
-                        <i class="fas fa-history"></i>
-                        <span>Histórico</span>
-                    </li>
-                </ul>
-            </nav>
-            
-            <div class="theme-switcher">
-                <i class="fas fa-moon"></i>
-                <span>Tema Escuro</span>
-            </div>
+      <!-- Sidebar -->
+      <div class="sidebar">
+        <div class="logo">
+          <img src="images/logo/image.png" alt="Face ID Logo" />
+          <h1>Face ID</h1>
         </div>
 
-        <!-- Main Content -->
-        <div class="main-content">
-            <!-- Dashboard Section -->
-            <section id="dashboard" class="content-section active">
-                <!-- Content will be loaded by JavaScript -->
-            </section>
+        <nav class="menu">
+          <ul>
+            <li data-section="dashboard" class="active">
+              <i class="fas fa-home"></i>
+              <span>Dashboard</span>
+            </li>
+            <li data-section="register">
+              <i class="fas fa-user-plus"></i>
+              <span>Cadastrar</span>
+            </li>
+            <li data-section="recognize">
+              <i class="fas fa-search"></i>
+              <span>Reconhecer</span>
+            </li>
+            <li data-section="users">
+              <i class="fas fa-users"></i>
+              <span>Usuários</span>
+            </li>
+            <li data-section="history">
+              <i class="fas fa-history"></i>
+              <span>Histórico</span>
+            </li>
+          </ul>
+        </nav>
 
-            <!-- Register Section -->
-            <section id="register" class="content-section">
-                <!-- Content will be loaded by JavaScript -->
-            </section>
-
-            <!-- Recognize Section -->
-            <section id="recognize" class="content-section">
-                <!-- Content will be loaded by JavaScript -->
-            </section>
-
-            <!-- Users Section -->
-            <section id="users" class="content-section">
-                <!-- Content will be loaded by JavaScript -->
-            </section>
-
-            <!-- History Section -->
-            <section id="history" class="content-section">
-                <!-- Content will be loaded by JavaScript -->
-            </section>
+        <div class="theme-switcher">
+          <i class="fas fa-moon"></i>
+          <span>Tema Escuro</span>
         </div>
+      </div>
+
+      <!-- Main Content -->
+      <div class="main-content">
+        <!-- Dashboard Section -->
+        <section id="dashboard" class="content-section active"></section>
+
+        <!-- Register Section -->
+        <section id="register" class="content-section"></section>
+
+        <!-- Recognize Section -->
+        <section id="recognize" class="content-section"></section>
+
+        <!-- Users Section -->
+        <section id="users" class="content-section"></section>
+
+        <!-- History Section -->
+        <section id="history" class="content-section"></section>
+      </div>
     </div>
-
-    <!-- Success Toast (will be created by JavaScript if needed) -->
-
-    <!-- Scripts -->
-    <script defer src="https://cdn.jsdelivr.net/npm/face-api.js@0.22.2/dist/face-api.min.js"></script>
+    <script
+      defer
+      src="https://cdn.jsdelivr.net/npm/face-api.js@0.22.2/dist/face-api.min.js"
+    ></script>
     <script src="scripts/database.js"></script>
     <script type="module" src="scripts/script.js"></script>
-</body>
+  </body>
 </html>
