@@ -108,7 +108,7 @@ O sistema utiliza modelos pré-treinados do face-api.js:
 
 ```bash
 git clone https://github.com/seu-usuario/face-id.git
-cd face-id
+cd face-id-api
 ```
 
 ### 2. Instale as dependências
