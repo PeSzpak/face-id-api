@@ -17,12 +17,13 @@ app.use(express.urlencoded({ extended: true, limit: "50mb" }));
 app.use(express.static("."));
 
 // MongoDB connection
-mongoose
-  .connect(
-    process.env.MONGODB_URL.replace("<db_password>", "YOUR_PASSWORD_HERE")
-  )
-  .then(() => console.log(" Connected to MongoDB"))
-  .catch((err) => console.error(" MongoDB connection error:", err));
+mongoose.connect(process.env.MONGO_URI, {
+    useNewUrlParser: true,
+    useUnifiedTopology: true,
+    serverSelectionTimeoutMS: 50000,
+})
+    .then(() => console.log("Connected to MongoDB"))
+    .catch(err => console.error("MongoDB connection error:", err));
 
 // Face Schema
 const FaceSchema = new mongoose.Schema({
