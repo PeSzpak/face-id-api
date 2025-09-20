@@ -122,7 +122,7 @@ npm install
 Crie um arquivo `.env` na raiz do projeto com:
 
 ```env
-PORT=3000
+PORT=3001
 MONGO_URI=mongodb+srv://usuario:<sua-senha>@cluster.mongodb.net/face_recognition_db?retryWrites=true&w=majority
 ```
 
