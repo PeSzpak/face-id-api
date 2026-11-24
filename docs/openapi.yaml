@@ -1,0 +1,174 @@
+openapi: 3.0.3
+info:
+  title: Face ID API
+  version: 1.0.0
+  description: |
+    Backend Express + MongoDB do Face ID. O navegador calcula o descritor facial (vetor de 128 números do
+    face-api.js) e a API só guarda e devolve esses vetores, sem receber imagens. Sem autenticação.
+    Nomes são a chave dos registros (únicos) e aparecem no caminho de algumas rotas: use URL encoding.
+servers:
+  - url: http://localhost:3001
+    description: Servidor local (npm start)
+security: []
+tags:
+  - name: Faces
+    description: Pessoas cadastradas e seus descritores
+paths:
+  /api/register:
+    post:
+      tags: [Faces]
+      summary: Cadastra uma pessoa com o descritor facial
+      operationId: registerFace
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [name, descriptor]
+              properties:
+                name: { type: string, example: Ana Ribeiro }
+                descriptor:
+                  type: array
+                  description: Descritor do face-api.js (128 floats). A API não valida o tamanho.
+                  items: { type: number }
+                  example: [0.0204, -0.0506, -0.1055]
+      responses:
+        "200":
+          description: Cadastrado
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message: { type: string, example: Ana Ribeiro registered successfully! }
+                  id: { type: string, example: 6b061820156eb7b61308cf08 }
+        "400":
+          description: Campo ausente ou nome já cadastrado
+          content:
+            application/json:
+              schema: { $ref: "#/components/schemas/Error" }
+              examples:
+                missing: { value: { error: Name and descriptor are required } }
+                duplicate: { value: { error: Person already registered } }
+        "500": { $ref: "#/components/responses/ServerError" }
+  /api/faces:
+    get:
+      tags: [Faces]
+      summary: Lista as pessoas cadastradas (sem descritor)
+      operationId: listFaces
+      responses:
+        "200":
+          description: Pessoas
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  faces: { type: array, items: { $ref: "#/components/schemas/FaceSummary" } }
+        "500": { $ref: "#/components/responses/ServerError" }
+  /api/faces/{name}:
+    delete:
+      tags: [Faces]
+      summary: Remove uma pessoa pelo nome
+      operationId: deleteFace
+      parameters: [{ $ref: "#/components/parameters/Name" }]
+      responses:
+        "200":
+          description: Removida
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message: { type: string, example: Ana Ribeiro deleted successfully }
+        "404": { $ref: "#/components/responses/NotFound" }
+        "500": { $ref: "#/components/responses/ServerError" }
+  /api/descriptors:
+    get:
+      tags: [Faces]
+      summary: Nomes e descritores, usados pelo navegador para montar o FaceMatcher
+      operationId: listDescriptors
+      responses:
+        "200":
+          description: Descritores
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  faces:
+                    type: array
+                    items:
+                      type: object
+                      properties:
+                        _id: { type: string }
+                        name: { type: string }
+                        descriptor: { type: array, items: { type: number } }
+        "500": { $ref: "#/components/responses/ServerError" }
+  /api/recognize/{name}:
+    post:
+      tags: [Faces]
+      summary: Soma 1 ao contador de reconhecimentos e atualiza lastSeen
+      description: O frontend chama esta rota a cada segundo enquanto a pessoa continua reconhecida na câmera.
+      operationId: recognizeFace
+      parameters: [{ $ref: "#/components/parameters/Name" }]
+      responses:
+        "200":
+          description: Contador atualizado
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message: { type: string, example: Recognition count updated for Ana Ribeiro }
+                  recognitionCount: { type: integer, example: 4 }
+        "404": { $ref: "#/components/responses/NotFound" }
+        "500": { $ref: "#/components/responses/ServerError" }
+  /api/history:
+    get:
+      tags: [Faces]
+      summary: Pessoas ordenadas pelo último reconhecimento (mais recente primeiro)
+      operationId: history
+      responses:
+        "200":
+          description: Histórico
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  history: { type: array, items: { $ref: "#/components/schemas/FaceSummary" } }
+        "500": { $ref: "#/components/responses/ServerError" }
+components:
+  parameters:
+    Name:
+      name: name
+      in: path
+      required: true
+      schema: { type: string, example: Ana Ribeiro }
+  responses:
+    NotFound:
+      description: Nome não cadastrado
+      content:
+        application/json:
+          schema: { $ref: "#/components/schemas/Error" }
+          example: { error: Face not found }
+    ServerError:
+      description: Erro no MongoDB
+      content:
+        application/json:
+          schema: { $ref: "#/components/schemas/Error" }
+  schemas:
+    Error:
+      type: object
+      properties:
+        error: { type: string }
+    FaceSummary:
+      type: object
+      properties:
+        _id: { type: string }
+        name: { type: string }
+        recognitionCount: { type: integer }
+        registeredAt: { type: string, format: date-time }
+        lastSeen: { type: string, format: date-time, description: No cadastro recebe a data do cadastro }
