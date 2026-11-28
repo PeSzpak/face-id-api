@@ -1,314 +1,166 @@
 # Face ID - Sistema de Reconhecimento Facial
 
-Um sistema completo de reconhecimento facial em tempo real utilizando tecnologias modernas de machine learning e interface web responsiva.
+Reconhecimento facial em tempo real no navegador: a pessoa se cadastra pela webcam, o [face-api.js](https://github.com/justadudewhohacks/face-api.js) transforma o rosto em um descritor de 128 números e uma API Express guarda esses vetores no MongoDB. Depois, a tela de reconhecimento compara cada rosto da câmera com os cadastrados e conta quantas vezes cada pessoa foi vista.
 
-## Tecnologias Utilizadas
+![Dashboard do Face ID](docs/media/dashboard.webp)
 
-![JavaScript](https://img.shields.io/badge/JavaScript-323330?style=for-the-badge&logo=javascript&logoColor=F7DF1E)
-![Node.js](https://img.shields.io/badge/Node.js-43853D?style=for-the-badge&logo=node.js&logoColor=white)
-![Express.js](https://img.shields.io/badge/Express.js-404D59?style=for-the-badge)
-![MongoDB](https://img.shields.io/badge/MongoDB-4EA94B?style=for-the-badge&logo=mongodb&logoColor=white)
-![HTML5](https://img.shields.io/badge/HTML5-E34F26?style=for-the-badge&logo=html5&logoColor=white)
-![CSS3](https://img.shields.io/badge/CSS3-1572B6?style=for-the-badge&logo=css3&logoColor=white)
+| Usuários cadastrados | Histórico | Reconhecimento com a câmera |
+| --- | --- | --- |
+| ![Lista de usuários com contadores](docs/media/usuarios.webp) | ![Histórico ordenado pelo último reconhecimento](docs/media/historico.webp) | ![Tela de reconhecimento com a câmera de teste do Chromium](docs/media/reconhecimento.webp) |
 
----
+Os nomes são fictícios e foram cadastrados com descritores aleatórios pela API. A câmera da última imagem é o vídeo sintético de teste do Chromium, por isso não há rosto detectado.
 
-## Visão Geral
+## Funcionalidades
 
-O Face ID é um sistema de reconhecimento facial que permite:
+- **Cadastro**: abre a webcam, detecta um único rosto, extrai o descritor e salva com o nome digitado.
+- **Reconhecimento**: a cada 1 segundo detecta todos os rostos do vídeo, compara com os cadastrados e desenha uma caixa verde com nome e similaridade. Um controle deslizante define a similaridade mínima (30% a 90%, padrão 70%).
+- **Usuários**: lista com número de reconhecimentos e último acesso, com exclusão.
+- **Histórico**: pessoas ordenadas pelo último reconhecimento.
+- Tema claro e escuro e layout responsivo (desktop, tablet e celular).
 
-- Cadastro de usuários através de captura facial
-- Reconhecimento facial em tempo real
-- Gerenciamento de usuários cadastrados
-- Histórico completo de reconhecimentos
-- Interface moderna e responsiva
-- Suporte a tema claro e escuro
+## Como funciona
 
----
-
-## Arquitetura do Sistema
-
-### Frontend
-
-- **face-api.js**: Biblioteca de machine learning para detecção e reconhecimento facial
-- **HTML5 Canvas**: Para renderização de overlays de detecção
-- **WebRTC**: Acesso à câmera do dispositivo
-- **CSS3**: Interface moderna com gradientes e animações
-- **Vanilla JavaScript**: Lógica de frontend sem dependências pesadas
-
-### Backend
-
-- **Node.js**: Runtime JavaScript server-side
-- **Express.js**: Framework web minimalista
-- **MongoDB**: Banco de dados NoSQL para armazenamento
-- **Mongoose**: ODM para MongoDB
-
-### Modelos de IA
-
-O sistema utiliza modelos pré-treinados do face-api.js:
-
-- `TinyFaceDetector`: Detecção rápida de rostos
-- `FaceLandmark68Net`: Detecção de pontos faciais
-- `FaceRecognitionNet`: Extração de características faciais
-- `FaceExpressionNet`: Análise de expressões (opcional)
-
----
-
-## Estrutura do Projeto
-
-### Funcionalidades Principais
-
-#### 1. Dashboard
-
-- Visão geral do sistema
-- Acesso rápido às principais funcionalidades
-- Estatísticas básicas de uso
-
-#### 2. Cadastro de Usuários
-
-- Captura facial em tempo real
-- Validação de qualidade da imagem
-- Extração automática de características faciais
-- Armazenamento seguro no banco de dados
-
-#### 3. Reconhecimento Facial
-
-- Detecção em tempo real via webcam
-- Comparação com base de dados existente
-- Feedback visual com bounding boxes
-- Atualização automática de contadores
-
-#### 4. Gerenciamento de Usuários
-
-- Lista completa de usuários cadastrados
-- Estatísticas de reconhecimento
-- Funcionalidade de exclusão
-- Dados de último acesso
-
-#### 5. Histórico
-
-- Registro completo de reconhecimentos
-- Timestamps detalhados
-- Contadores de acesso por usuário
-
----
-
-## Pré-requisitos
-
-- Node.js (versão 14 ou superior)
-- MongoDB Atlas (conta gratuita)
-- Navegador moderno com suporte a WebRTC
-- Webcam funcional
-
----
-
-## Instalação e Configuração
-
-### 1. Clone o repositório
-
-```bash
-git clone https://github.com/seu-usuario/face-id.git
-cd face-id-api
+```mermaid
+sequenceDiagram
+  participant N as Navegador (face-api.js)
+  participant A as API Express
+  participant M as MongoDB (faces)
+  Note over N: carrega os modelos de ./models
+  N->>N: webcam → detectSingleFace + landmarks + descriptor
+  N->>A: POST /api/register {name, descriptor[128]}
+  A->>M: insere {name, descriptor, registeredAt}
+  N->>A: GET /api/descriptors
+  A-->>N: [{name, descriptor}]
+  loop a cada 1 s na tela Reconhecer
+    N->>N: detectAllFaces → FaceMatcher.findBestMatch
+    N->>A: POST /api/recognize/:name (se similaridade ≥ mínimo)
+    A->>M: recognitionCount + 1, lastSeen = agora
+  end
 ```
 
-### 2. Instale as dependências
+- Nenhuma imagem sai do navegador: só o nome e o vetor de 128 números vão para a API.
+- Similaridade = `1 - distância euclidiana` entre descritores. O `FaceMatcher` usa limite de distância 0,6 e, depois, a tela aplica o mínimo de similaridade escolhido no controle.
+- Modelos usados: `TinyFaceDetector`, `FaceLandmark68Net`, `FaceRecognitionNet` e `FaceExpressionNet` (carregado, mas não usado). Os pesos estão versionados em `models/`.
+- O mesmo `server.js` serve a API e os arquivos estáticos da interface.
+
+### Documento no MongoDB
+
+Coleção `faces`, no banco definido na `MONGO_URI`:
+
+| Campo | Tipo | Observação |
+|---|---|---|
+| `name` | String | obrigatório, único; é a chave usada nas rotas |
+| `descriptor` | [Number] | obrigatório; 128 valores vindos do face-api.js |
+| `registeredAt` | Date | data do cadastro |
+| `recognitionCount` | Number | começa em 0 |
+| `lastSeen` | Date | último reconhecimento (no cadastro, a data do cadastro) |
+
+## Stack
+
+- Frontend: HTML, CSS (separado em base, componentes, seções e temas), JavaScript em módulos, face-api.js, WebRTC (`getUserMedia`) e Canvas.
+- Backend: Node.js, Express 4, Mongoose 7, dotenv, CORS.
+- Banco: MongoDB (Atlas ou local).
+
+## Como rodar
+
+### Pré-requisitos
+
+- Node.js 18 ou superior
+- MongoDB: uma conta no [MongoDB Atlas](https://www.mongodb.com/cloud/atlas) ou um MongoDB local
+- Navegador com webcam. `getUserMedia` só funciona em `localhost` ou HTTPS.
+
+### Passos
 
 ```bash
+git clone https://github.com/PeSzpak/face-id-api.git
+cd face-id-api
 npm install
 ```
 
-### 3. Configure o banco de dados
-
-Crie um arquivo `.env` na raiz do projeto com:
+Crie um `.env` na raiz:
 
 ```env
 PORT=3001
 MONGO_URI=mongodb+srv://usuario:<sua-senha>@cluster.mongodb.net/face_recognition_db?retryWrites=true&w=majority
 ```
 
-### 4. Download dos modelos (opcional)
-
-Os modelos do face-api.js já estão incluídos no projeto. Caso precise atualizá-los:
+Para testar sem o Atlas, um MongoDB local em Docker serve:
 
 ```bash
-cd models && ./download-models.sh
+docker run -d --name face-id-mongo -p 27017:27017 mongo:7
+# MONGO_URI=mongodb://localhost:27017/face_recognition_db
 ```
 
-### 5. Inicie o servidor
+| Variável | Padrão | Uso |
+|---|---|---|
+| `PORT` | `3001` | Porta da API e da interface |
+| `MONGO_URI` | (obrigatória) | String de conexão do MongoDB |
+
+Suba o servidor e abra http://localhost:3001:
 
 ```bash
-npm start
+npm start      # ou npm run dev, com nodemon
 ```
 
-ou para desenvolvimento:
+No Atlas, libere o IP da sua máquina em **Network Access** e crie um usuário de banco. A coleção `faces` é criada no primeiro cadastro.
+
+## Uso
+
+1. **Cadastrar**: digite o nome, clique em **Iniciar câmera**, posicione o rosto e clique em **Capturar e cadastrar**.
+2. **Reconhecer**: clique em **Iniciar reconhecimento**. Rostos acima da similaridade mínima ganham uma caixa verde com o nome.
+3. **Usuários** e **Histórico**: acompanhe os contadores e exclua cadastros.
+
+O limiar padrão fica em `scripts/modules/recognition.js` (`similarityThreshold = 0.7`) e o limite do `FaceMatcher` em `scripts/modules/models.js` (`0.6`).
+
+## API
+
+| Método | Rota | O que faz |
+|---|---|---|
+| POST | `/api/register` | Cadastra `{ name, descriptor }`. 400 se faltar campo ou o nome já existir |
+| GET | `/api/faces` | Lista as pessoas (sem o descritor) |
+| GET | `/api/descriptors` | Nomes e descritores, para o reconhecimento |
+| POST | `/api/recognize/:name` | Soma 1 ao contador e atualiza `lastSeen`. 404 se o nome não existe |
+| DELETE | `/api/faces/:name` | Remove a pessoa. 404 se o nome não existe |
+| GET | `/api/history` | Pessoas ordenadas pelo último reconhecimento |
 
 ```bash
-npm run dev
+curl -X POST "http://localhost:3001/api/recognize/Ana%20Ribeiro"
+# {"message":"Recognition count updated for Ana Ribeiro","recognitionCount":4}
 ```
 
-### 6. Acesse a aplicação
+- OpenAPI 3.0: [`docs/openapi.yaml`](docs/openapi.yaml). Para ver: cole em https://editor.swagger.io ou rode `npx @redocly/cli@1.34.3 preview-docs docs/openapi.yaml`.
+- Postman: importe [`docs/postman/face-id-api.postman_collection.json`](docs/postman/face-id-api.postman_collection.json) (`baseUrl` em `http://localhost:3001`, variável `name` com o nome usado nas rotas).
 
-Abra seu navegador e acesse: `http://localhost:3000`
+## Estrutura
 
----
-
-## Configuração do MongoDB Atlas
-
-### 1. Criar conta
-
-- Acesse [MongoDB Atlas](https://www.mongodb.com/cloud/atlas)
-- Crie uma conta gratuita
-
-### 2. Criar cluster
-
-- Crie um novo cluster (tier gratuito)
-- Aguarde a criação (pode levar alguns minutos)
-
-### 3. Configurar acesso
-
-- Configure o IP whitelist (`0.0.0.0/0` para desenvolvimento)
-- Crie um usuário de banco de dados
-- Copie a string de conexão
-
-### 4. Estrutura do banco
-
-O sistema criará automaticamente:
-
-- **Database**: `face_recognition_db`
-- **Collection**: `faces`
-
----
-
-## Uso da Aplicação
-
-### Primeiro Acesso
-
-- Acesse a aplicação via navegador
-- Permita o acesso à câmera quando solicitado
-- Navegue pelo menu lateral para explorar as funcionalidades
-
-### Cadastrando Usuários
-
-1. Clique em "Cadastrar" no menu
-2. Digite o nome da pessoa
-3. Clique em "Iniciar Câmera"
-4. Posicione o rosto no enquadramento
-5. Clique em "Capturar e Cadastrar"
-
-### Reconhecendo Faces
-
-1. Clique em "Reconhecer" no menu
-2. Clique em "Iniciar Reconhecimento"
-3. O sistema identificará automaticamente faces conhecidas
-4. Boxes coloridos aparecerão sobre faces detectadas
-
-### Gerenciando Usuários
-
-- Acesse "Usuários" no menu
-- Visualize todos os cadastrados
-- Use "Excluir" para remover usuários
-- Clique em "Atualizar Lista" para refresh
-
----
-
-## API Endpoints
-
-```http
-POST   /api/register        # Cadastra um novo usuário
-GET    /api/faces           # Retorna todos os usuários cadastrados
-GET    /api/descriptors     # Retorna descritores faciais para reconhecimento
-POST   /api/recognize/:name # Atualiza contador de reconhecimento
-DELETE /api/faces/:name     # Remove um usuário do sistema
-GET    /api/history         # Retorna histórico de reconhecimentos
+```
+.
+├── server.js             # API Express + Mongoose e arquivos estáticos
+├── index.html            # casca da interface (sidebar e seções)
+├── face-api.min.js       # face-api.js
+├── models/               # pesos dos modelos do face-api.js
+├── scripts/
+│   ├── script.js         # inicialização da aplicação
+│   ├── database.js       # chamadas à API (DatabaseManager)
+│   └── modules/          # dashboard, register, recognition, users, history, models, navigation, utils
+├── styles/               # base, components, sections, responsive, themes
+├── images/logo/          # ícone
+└── docs/                 # openapi.yaml, coleção Postman e imagens
 ```
 
----
+## Limitações conhecidas
 
-## Personalização
-
-### Temas
-
-- O sistema suporta tema claro e escuro
-- Use o botão na sidebar para alternar
-- As preferências são mantidas na sessão
-
-### Responsividade
-
-- Interface otimizada para desktop, tablet e mobile
-- Sidebar colapsível em telas pequenas
-- Botões e formulários adaptáveis
-
-### Configurações de Reconhecimento
-
-No arquivo `scripts/script.js`, você pode ajustar:
-
-- Parâmetros de detecção
-- Threshold de distância
-- Qualidade mínima de imagem
-
----
-
-## Solução de Problemas
-
-### Câmera não funciona
-
-- Verifique as permissões do navegador
-- Teste em HTTPS (necessário para WebRTC)
-- Reinicie o navegador
-
-### Modelos não carregam
-
-- Verifique a conexão com internet
-- Confirme se os arquivos estão na pasta `models/`
-- Analise o console do navegador para erros
-
-### Erro de conexão com MongoDB
-
-- Verifique a string de conexão no `.env`
-- Confirme se o IP está na whitelist
-- Teste a conectividade com MongoDB Atlas
-
-### Performance baixa
-
-- Use navegadores baseados em Chromium para melhor performance
-- Feche outras abas que usam câmera
-- Ajuste a resolução do vídeo se necessário
-
----
-
-## Contribuição
-
-1. Fork o projeto
-2. Crie uma branch para sua feature:
-
-```bash
-git checkout -b feature/NovaFuncionalidade
-```
-
-3. Commit suas mudanças:
-
-```bash
-git commit -m "feat: Adiciona nova funcionalidade"
-```
-
-4. Push para a branch:
-
-```bash
-git push origin feature/NovaFuncionalidade
-```
-
-5. Abra um Pull Request
-
----
-
-## Licença
-
-Este projeto está sob a licença MIT. Veja o arquivo `LICENSE` para mais detalhes.
-
----
+- **Sem autenticação**: qualquer um com acesso à API lista, baixa os descritores e apaga cadastros. Descritores faciais são dados biométricos; não exponha a API publicamente assim.
+- `express.static(".")` publica a pasta inteira do projeto, incluindo `server.js` e `package.json`. O `.env` não sai porque o Express ignora arquivos que começam com ponto.
+- Enquanto a pessoa continua na frente da câmera, o contador sobe a cada segundo, então "reconhecimentos" mede segundos visto, não visitas.
+- Os descritores são recarregados quando o app abre e depois de cadastrar ou excluir; um cadastro feito em outra aba só entra no reconhecimento depois de recarregar a página.
+- O nome é a chave única: duas pessoas com o mesmo nome não podem ser cadastradas, e o nome vai na URL de `recognize` e `delete`.
+- A API não valida o tamanho do descritor.
+- `server.js` passa `useNewUrlParser` e `useUnifiedTopology`, opções que o Mongoose 7 ignora.
+- O `FaceExpressionNet` é baixado e carregado, mas nenhuma tela usa expressões.
+- Não há arquivo `LICENSE` no repositório, nem testes automatizados.
 
 ## Suporte
 
-- Abra uma issue no repositório
-- Consulte a [documentação do face-api.js](https://justadudewhohacks.github.io/face-api.js/docs/)
-- Verifique a [documentação do MongoDB Atlas](https://www.mongodb.com/docs/atlas/)
+- [Documentação do face-api.js](https://justadudewhohacks.github.io/face-api.js/docs/)
+- [Documentação do MongoDB Atlas](https://www.mongodb.com/docs/atlas/)

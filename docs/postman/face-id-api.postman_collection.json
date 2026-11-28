@@ -1,0 +1,31 @@
+{
+  "info": {
+    "name": "Face ID API",
+    "description": "Backend Express + MongoDB do Face ID. Sem autenticação; a variável token fica vazia. O descritor de exemplo é aleatório (o real tem 128 números e vem do face-api.js no navegador).",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "variable": [
+    { "key": "baseUrl", "value": "http://localhost:3001" },
+    { "key": "token", "value": "" },
+    { "key": "name", "value": "Ana Ribeiro" }
+  ],
+  "item": [
+    {
+      "name": "Cadastrar pessoa",
+      "request": {
+        "method": "POST",
+        "header": [{ "key": "Content-Type", "value": "application/json" }],
+        "url": "{{baseUrl}}/api/register",
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"name\": \"{{name}}\",\n  \"descriptor\": [0.0204, -0.0506, -0.1055, -0.0841, 0.0915, -0.0123, 0.1402, 0.0311]\n}"
+        }
+      }
+    },
+    { "name": "Listar pessoas", "request": { "method": "GET", "url": "{{baseUrl}}/api/faces" } },
+    { "name": "Descritores", "request": { "method": "GET", "url": "{{baseUrl}}/api/descriptors" } },
+    { "name": "Registrar reconhecimento", "request": { "method": "POST", "url": "{{baseUrl}}/api/recognize/{{name}}" } },
+    { "name": "Histórico", "request": { "method": "GET", "url": "{{baseUrl}}/api/history" } },
+    { "name": "Remover pessoa", "request": { "method": "DELETE", "url": "{{baseUrl}}/api/faces/{{name}}" } }
+  ]
+}
